@@ -21,18 +21,16 @@ export const nve = async function(versionRange, args = []) {
 export const getPath = async function(versionRange, progress) {
   const cacheDir = await globalCacheDir(CACHE_DIR)
   const progressA = progress !== false && env.NVE_PROGRESS !== '0'
-  const nodePath = await getNode(versionRange, cacheDir, {
+  return getNode(versionRange, cacheDir, {
     progress: progressA,
   })
-  return nodePath
 }
 
 const CACHE_DIR = 'nve'
 
 // Forward arguments to another node binary located at `nodePath`.
 // We also forward standard streams and exit code.
-const runNodeProcess = async function(nodePath, args) {
+const runNodeProcess = function(nodePath, args) {
   const childProcess = spawn(nodePath, args, { stdio: 'inherit' })
-  const [code, signal] = await pEvent(childProcess, 'exit', { multiArgs: true })
-  return { code, signal }
+  return pEvent(childProcess, 'exit', { multiArgs: true })
 }
